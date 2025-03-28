@@ -1,1 +1,222 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aashish Jha</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="ui-layer">
+            <div id="score-container">
+                <div id="score">0</div>
+                <div id="multiplier">x1</div>
+            </div>
+    
+            <div id="health-container">
+                <div id="health-bar">
+                    <div id="health-fill"></div>
+                </div>
+                <div id="shield-indicator">
+                    <div class="shield-segment"></div>
+                    <div class="shield-segment"></div>
+                    <div class="shield-segment"></div>
+                </div>
+            </div>
+            
+            <div id="weapon-container">
+                <div id="current-weapon">
+                    <div class="weapon-icon laser-icon active"></div>
+                </div>
+                <div id="weapon-cooldown"></div>
+            </div>
+            
+            <div id="special-container">
+                <div id="special-icon"></div>
+                <div id="special-cooldown"></div>
+            </div>
+            
+            <div id="wave-indicator">WAVE <span id="wave-number">1</span></div>
+            
+            <div id="controls-hint">
+                <div class="key-hint">
+                    <span class="key">W</span>
+                    <span class="key">A</span>
+                    <span class="key">S</span>
+                    <span class="key">D</span>
+                    <span class="hint-text">MOVE</span>
+                </div>
+                <div class="key-hint">
+                    <span class="key">SPACE</span>
+                    <span class="hint-text">SHOOT</span>
+                </div>
+                <div class="key-hint">
+                    <span class="key">SHIFT</span>
+                    <span class="hint-text">SPECIAL</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="start-screen" class="screen">
+            <div class="title-container">
+                <h1 class="game-title">Space</h1>
+                <h1 class="game-title">Wars</h1>
+            </div>
+            <div class="ship-selection">
+                <h2>SELECT YOUR SHIP</h2>
+                <div class="ships-container">
+                    <div class="ship-option selected" data-ship="fighter">
+                        <div class="ship-preview fighter"></div>
+                        <div class="ship-name">FIGHTER</div>
+                        <div class="ship-stats">
+                            <div class="stat">SPEED: <span class="stat-value">★★★☆☆</span></div>
+                            <div class="stat">POWER: <span class="stat-value">★★★☆☆</span></div>
+                            <div class="stat">HEALTH: <span class="stat-value">★★☆☆☆</span></div>
+                        </div>
+                    </div>
+                    <div class="ship-option" data-ship="tank">
+                        <div class="ship-preview tank"></div>
+                        <div class="ship-name">TANK</div>
+                        <div class="ship-stats">
+                            <div class="stat">SPEED: <span class="stat-value">★☆☆☆☆</span></div>
+                            <div class="stat">POWER: <span class="stat-value">★★★★☆</span></div>
+                            <div class="stat">HEALTH: <span class="stat-value">★★★★★</span></div>
+                        </div>
+                    </div>
+                    <div class="ship-option" data-ship="scout">
+                        <div class="ship-preview scout"></div>
+                        <div class="ship-name">SCOUT</div>
+                        <div class="ship-stats">
+                            <div class="stat">SPEED: <span class="stat-value">★★★★★</span></div>
+                            <div class="stat">POWER: <span class="stat-value">★★☆☆☆</span></div>
+                            <div class="stat">HEALTH: <span class="stat-value">★★☆☆☆</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="start-button-container">
+                <button id="start-button" class="game-button">START GAME</button>
+                <button id="instructions-button" class="game-button">HOW TO PLAY</button>
+            </div>
+        </div>
+        
+        <div id="instructions-screen" class="screen hidden">
+            <h2>HOW TO PLAY</h2>
+            <div class="instructions-content">
+                <div class="instruction-section">
+                    <h3>CONTROLS</h3>
+                    <ul>
+                        <li><span class="key-text">W, A, S, D</span> - Move your ship</li>
+                        <li><span class="key-text">SPACE</span> - Fire weapons</li>
+                        <li><span class="key-text">SHIFT</span> - Activate special ability</li>
+                        <li><span class="key-text">P</span> - Pause game</li>
+                    </ul>
+                </div>
+                <div class="instruction-section">
+                    <h3>POWER-UPS</h3>
+                    <ul>
+                        <li><span class="powerup-text blue">BLUE</span> - Shield</li>
+                        <li><span class="powerup-text green">GREEN</span> - Health</li>
+                        <li><span class="powerup-text red">RED</span> - Weapon upgrade</li>
+                        <li><span class="powerup-text yellow">YELLOW</span> - Score multiplier</li>
+                        <li><span class="powerup-text purple">PURPLE</span> - Special ability</li>
+                    </ul>
+                </div>
+                <div class="instruction-section">
+                    <h3>SHIPS</h3>
+                    <ul>
+                        <li><span class="ship-text fighter">FIGHTER</span> - Balanced ship</li>
+                        <li><span class="ship-text tank">TANK</span> - High health, powerful weapons</li>
+                        <li><span class="ship-text scout">SCOUT</span> - Fast and agile</li>
+                    </ul>
+                </div>
+                <div class="instruction-section">
+                    <h3>TIPS</h3>
+                    <ul>
+                        <li>Destroy enemies to earn points</li>
+                        <li>Collect power-ups to enhance your ship</li>
+                        <li>Avoid enemy projectiles and collisions</li>
+                        <li>Survive as long as possible to reach higher waves</li>
+                        <li>Boss enemies appear every 5 waves</li>
+                    </ul>
+                </div>
+            </div>
+            <button id="back-button" class="game-button">BACK</button>
+        </div>
+        
+        <div id="game-over-screen" class="screen hidden">
+            <h2>GAME OVER</h2>
+            <div class="score-summary">
+                <div class="final-score">SCORE: <span id="final-score">0</span></div>
+                <div class="high-score">HIGH SCORE: <span id="high-score">0</span></div>
+                <div class="waves-survived">WAVES SURVIVED: <span id="waves-survived">0</span></div>
+                <div class="enemies-destroyed">ENEMIES DESTROYED: <span id="enemies-destroyed">0</span></div>
+                <div class="time-survived">TIME SURVIVED: <span id="time-survived">0:00</span></div>
+            </div>
+            <div class="game-over-buttons">
+                <button id="restart-button" class="game-button">PLAY AGAIN</button>
+                <button id="menu-button" class="game-button">MAIN MENU</button>
+            </div>
+        </div>
+        
+        <div id="pause-screen" class="screen hidden">
+            <h2>PAUSED</h2>
+            <div class="pause-stats">
+                <div>SCORE: <span id="pause-score">0</span></div>
+                <div>WAVE: <span id="pause-wave">1</span></div>
+                <div>ENEMIES DESTROYED: <span id="pause-enemies">0</span></div>
+            </div>
+            <div class="pause-buttons">
+                <button id="resume-button" class="game-button">RESUME</button>
+                <button id="quit-button" class="game-button">QUIT</button>
+            </div>
+        </div>
+        
+        <div id="level-up-screen" class="screen hidden">
+            <h2>WAVE COMPLETE!</h2>
+            <div class="level-up-content">
+                <div class="wave-info">WAVE <span id="completed-wave">1</span> COMPLETED</div>
+                <div class="wave-score">SCORE: <span id="wave-score">0</span></div>
+                <div class="upgrade-selection">
+                    <h3>CHOOSE AN UPGRADE</h3>
+                    <div class="upgrade-options">
+                        <div class="upgrade-option" data-upgrade="weapon">
+                            <div class="upgrade-icon weapon-upgrade-icon"></div>
+                            <div class="upgrade-name">WEAPON POWER</div>
+                            <div class="upgrade-description">Increase weapon damage by 25%</div>
+                        </div>
+                        <div class="upgrade-option" data-upgrade="health">
+                            <div class="upgrade-icon health-upgrade-icon"></div>
+                            <div class="upgrade-name">MAX HEALTH</div>
+                            <div class="upgrade-description">Increase max health by 20%</div>
+                        </div>
+                        <div class="upgrade-option" data-upgrade="speed">
+                            <div class="upgrade-icon speed-upgrade-icon"></div>
+                            <div class="upgrade-name">SHIP SPEED</div>
+                            <div class="upgrade-description">Increase movement speed by 15%</div>
+                        </div>
+                        <div class="upgrade-option" data-upgrade="special">
+                            <div class="upgrade-icon special-upgrade-icon"></div>
+                            <div class="upgrade-name">SPECIAL ABILITY</div>
+                            <div class="upgrade-description">Reduce cooldown by 20%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button id="continue-button" class="game-button">CONTINUE TO WAVE <span id="next-wave">2</span></button>
+        </div>
+        
+        <div id="achievement-popup" class="hidden">
+            <div class="achievement-icon"></div>
+            <div class="achievement-content">
+                <div class="achievement-title">ACHIEVEMENT UNLOCKED!</div>
+                <div class="achievement-name">First Blood</div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html
