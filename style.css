@@ -1,1 +1,859 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap");
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Orbitron", sans-serif;
+  background-color: #000;
+  color: #fff;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-container {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  height: 675px;
+  margin: 0 auto;
+  box-shadow: 0 0 50px rgba(0, 255, 255, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.game-container::after {
+  content: "Aashish Jha";
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(255, 0, 0);
+  pointer-events: none;
+  z-index: 3;
+  font-family: "Orbitron", sans-serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: linear-gradient(45deg, rgba(0, 255, 255, 0.15), rgba(255, 0, 255, 0.15));
+  padding: 5px 10px;
+  border-radius: 4px;
+  backdrop-filter: blur(2px);
+  transition: opacity 0.3s ease;
+}
+
+.game-container:hover::after {
+  opacity: 0.5;
+}
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-color: #000;
+}
+
+#ui-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+#score-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  text-align: right;
+}
+
+#score {
+  font-size: 36px;
+  font-weight: 700;
+  color: #0ff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+}
+
+#multiplier {
+  font-size: 18px;
+  color: #ff0;
+  margin-top: -5px;
+}
+
+#health-container {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 200px;
+}
+
+#health-bar {
+  height: 15px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 7px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+#health-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right, #f00, #ff0);
+  transition: width 0.3s;
+}
+
+#shield-indicator {
+  display: flex;
+  margin-top: 5px;
+  gap: 5px;
+}
+
+.shield-segment {
+  flex: 1;
+  height: 8px;
+  background-color: rgba(0, 255, 255, 0.3);
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.shield-segment.active {
+  background-color: #0ff;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+}
+
+#weapon-container {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+}
+
+#current-weapon {
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.weapon-icon {
+  width: 30px;
+  height: 30px;
+  opacity: 0.5;
+  transition: opacity 0.3s;
+}
+
+.weapon-icon.active {
+  opacity: 1;
+}
+
+.laser-icon {
+  background: linear-gradient(to bottom, #f00, #f70);
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+}
+
+#weapon-cooldown {
+  width: 100px;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  margin-left: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+}
+
+#weapon-cooldown::before {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 100%;
+  background-color: #0f0;
+  transform-origin: left;
+  transform: scaleX(var(--cooldown-scale, 1));
+  transition: transform 0.1s linear;
+}
+
+#special-container {
+  position: absolute;
+  bottom: 20px;
+  left: 180px;
+  display: flex;
+  align-items: center;
+}
+
+#special-icon {
+  width: 50px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: radial-gradient(circle, #f0f, #70f);
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.7);
+  position: relative;
+}
+
+#special-icon::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+#special-cooldown {
+  width: 100px;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  margin-left: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+}
+
+#special-cooldown::before {
+  content: "";
+  display: block;
+  height: 100%;
+  width: 100%;
+  background-color: #f0f;
+  transform-origin: left;
+  transform: scaleX(var(--special-cooldown-scale, 1));
+  transition: transform 0.1s linear;
+}
+
+#wave-indicator {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 5px 15px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#controls-hint {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.key-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.key {
+  display: inline-block;
+  min-width: 25px;
+  height: 25px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  text-align: center;
+  line-height: 25px;
+  font-size: 12px;
+  margin-right: 2px;
+}
+
+.hint-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.9);
+  padding: 20px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Updated title animation */
+@keyframes titleGlow {
+  0% {
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.7),
+                 0 0 20px rgba(0, 255, 255, 0),
+                 0 0 30px rgba(255, 0, 255, 0);
+    transform: translateY(0px);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.9),
+                 0 0 40px rgba(0, 255, 255, 0.5),
+                 0 0 60px rgba(255, 0, 255, 0.3);
+    transform: translateY(-2px);
+  }
+  100% {
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.7),
+                 0 0 20px rgba(0, 255, 255, 0),
+                 0 0 30px rgba(255, 0, 255, 0);
+    transform: translateY(0px);
+  }
+}
+
+.title-container {
+  margin-bottom: 30px;
+  text-align: center;
+  perspective: 1000px;
+}
+
+.title-container h1:first-child {
+  animation-delay: -1.5s;
+}
+
+.game-title {
+  font-size: 72px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: transparent;
+  background: linear-gradient(45deg, #0ff, #f0f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  line-height: 1;
+  letter-spacing: 5px;
+  animation: titleGlow 3s ease-in-out infinite;
+  position: relative;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.3));
+}
+
+.ship-selection {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.ship-selection h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #0ff;
+}
+
+.ships-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
+.ship-option {
+  width: 180px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 2px solid transparent;
+}
+
+.ship-option:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-5px);
+}
+
+.ship-option.selected {
+  border-color: #0ff;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.ship-preview {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 15px;
+  position: relative;
+}
+
+.ship-preview.fighter {
+  background-color: #00a0ff;
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+}
+
+.ship-preview.fighter::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 40px;
+  background-color: #fff;
+  top: 30px;
+  left: 30px;
+}
+
+.ship-preview.tank {
+  background-color: #f00;
+  clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+}
+
+.ship-preview.tank::after {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-color: #fff;
+  top: 25px;
+  left: 25px;
+  border-radius: 50%;
+}
+
+.ship-preview.scout {
+  background-color: #0f0;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.ship-preview.scout::after {
+  content: "";
+  position: absolute;
+  width: 15px;
+  height: 40px;
+  background-color: #fff;
+  top: 20px;
+  left: 32.5px;
+}
+
+.ship-name {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.ship-stats {
+  text-align: left;
+  font-size: 12px;
+}
+
+.stat {
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  color: #0ff;
+}
+
+.start-button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.game-button {
+  font-family: "Orbitron", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: linear-gradient(to right, #0ff, #f0f);
+  color: #000;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 250px;
+  text-align: center;
+}
+
+.game-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+}
+
+h2 {
+  font-size: 36px;
+  margin-bottom: 30px;
+  color: #0ff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+}
+
+.instructions-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-bottom: 30px;
+  max-width: 800px;
+}
+
+.instruction-section h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #f0f;
+}
+
+.instruction-section ul {
+  list-style: none;
+}
+
+.instruction-section li {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.key-text {
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin: 0 2px;
+  color: #fff;
+}
+
+.powerup-text {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin: 0 2px;
+}
+
+.powerup-text.blue {
+  background-color: rgba(0, 255, 255, 0.3);
+  color: #0ff;
+}
+
+.powerup-text.green {
+  background-color: rgba(0, 255, 0, 0.3);
+  color: #0f0;
+}
+
+.powerup-text.red {
+  background-color: rgba(255, 0, 0, 0.3);
+  color: #f00;
+}
+
+.powerup-text.yellow {
+  background-color: rgba(255, 255, 0, 0.3);
+  color: #ff0;
+}
+
+.powerup-text.purple {
+  background-color: rgba(255, 0, 255, 0.3);
+  color: #f0f;
+}
+
+.ship-text {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin: 0 2px;
+}
+
+.ship-text.fighter {
+  background-color: rgba(0, 160, 255, 0.3);
+  color: #00a0ff;
+}
+
+.ship-text.tank {
+  background-color: rgba(255, 0, 0, 0.3);
+  color: #f00;
+}
+
+.ship-text.scout {
+  background-color: rgba(0, 255, 0, 0.3);
+  color: #0f0;
+}
+
+.score-summary {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  min-width: 300px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.final-score,
+.high-score,
+.waves-survived,
+.enemies-destroyed,
+.time-survived {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.final-score span,
+.high-score span,
+.waves-survived span,
+.enemies-destroyed span,
+.time-survived span {
+  color: #0ff;
+  font-weight: 700;
+}
+
+.game-over-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.pause-stats {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  min-width: 300px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-align: center;
+  font-size: 18px;
+}
+
+.pause-stats div {
+  margin-bottom: 10px;
+}
+
+.pause-stats span {
+  color: #0ff;
+  font-weight: 700;
+}
+
+.pause-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.level-up-content {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  min-width: 600px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.wave-info,
+.wave-score {
+  font-size: 20px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.wave-info span,
+.wave-score span {
+  color: #0ff;
+  font-weight: 700;
+}
+
+.upgrade-selection h3 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #f0f;
+  text-align: center;
+}
+
+.upgrade-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.upgrade-option {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upgrade-option:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+}
+
+.upgrade-option.selected {
+  background-color: rgba(0, 255, 255, 0.2);
+  border-color: #0ff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+.upgrade-icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+}
+
+.weapon-upgrade-icon {
+  background: radial-gradient(circle, #f00, #900);
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+}
+
+.health-upgrade-icon {
+  background: radial-gradient(circle, #0f0, #090);
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+}
+
+.speed-upgrade-icon {
+  background: radial-gradient(circle, #ff0, #990);
+  box-shadow: 0 0 10px rgba(255, 255, 0, 0.7);
+}
+
+.special-upgrade-icon {
+  background: radial-gradient(circle, #f0f, #909);
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.7);
+}
+
+.upgrade-name {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: #fff;
+}
+
+.upgrade-description {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+
+#achievement-popup {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  border: 2px solid #f0f;
+  border-radius: 10px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 100;
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+  transition: all 0.5s;
+  opacity: 0;
+  transform: translateX(-50%) translateY(100px);
+}
+
+#achievement-popup.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.achievement-icon {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, #f0f, #909);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.achievement-icon::after {
+  content: "★";
+  color: #fff;
+  font-size: 24px;
+}
+
+.achievement-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.achievement-title {
+  font-size: 12px;
+  color: #f0f;
+  margin-bottom: 5px;
+}
+
+.achievement-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+.shake {
+  animation: shake 0.5s;
+}
+
+@media (max-width: 768px) {
+  .game-title {
+    font-size: 48px;
+  }
+
+  .level-up-content {
+    min-width: 90%;
+  }
+
+  .upgrade-options {
+    grid-template-columns: 1fr;
+  }
+
+  .instructions-content {
+    grid-template-columns: 1fr;
+  }
+
+  .game-over-buttons {
+    flex-direction: column;
+  }
+
+  .ships-container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
